@@ -1,0 +1,28 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.next1.Welcome" >
+
+    <item
+        android:id="@+id/action_atividades"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/action_atividades"/>
+
+     <item
+        android:id="@+id/action_dados"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/action_dados"/>
+     
+      <item
+        android:id="@+id/action_ajuda"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/action_ajuda"/>
+          
+       <item
+        android:id="@+id/action_sair"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/action_sair"/>
+</menu>

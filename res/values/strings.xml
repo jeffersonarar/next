@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Next1</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_atividades">Atividades</string>
+    <string name="action_dados">Dados</string>
+    <string name="action_ajuda">Ajuda</string>
+    <string name="action_sair">Sair</string>
+    <string name="disciplina_prompt">Disciplina</string>
+    <string name="categoria_title">Category:</string>
+</resources>
