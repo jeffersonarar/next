@@ -10,11 +10,11 @@
          android:layout_height="wrap_content"
          android:prompt="@string/disciplina_prompt" />
 
-     <Spinner
-         android:id="@+id/spinnerConteudo"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_margin="10dip" />
+    <Spinner
+        android:id="@+id/spinnerConteudo"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dip" />
 
     <Spinner
         android:id="@+id/spinnerCategoria"

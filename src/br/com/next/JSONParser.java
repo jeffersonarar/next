@@ -55,9 +55,7 @@ public class JSONParser{
            con = (HttpURLConnection) url.openConnection();
            con.setRequestMethod(method);
            con.setRequestProperty("Content-Type", "application/json");
-           if(data!=null){
-        	   con.setRequestProperty("Content-Length", new StringBuilder().append(data.length()).toString());
-           }
+    
         
            con.setRequestProperty("Connection", "Keep-alive");
            con.setRequestProperty("Accept-Language", "UTF-8");
@@ -71,6 +69,7 @@ public class JSONParser{
          
             con.setRequestProperty("Accept", "application/json");
             con.connect();
+            
             //Write
             OutputStream os = con.getOutputStream();
             if(data!=null){
