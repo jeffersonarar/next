@@ -1,24 +1,19 @@
 package br.com.next;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import br.com.core.Model.Atividade;
-import br.com.core.Model.Categoria;
-import br.com.core.Model.Conteudo;
-import br.com.core.Model.Disciplina;
-import br.com.core.Model.Estagiario;
-import br.com.core.Model.Matriz;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.MaskFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.style.MaskFilterSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,15 +22,23 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
+import br.com.core.Model.Atividade;
+import br.com.core.Model.Categoria;
+import br.com.core.Model.Conteudo;
+import br.com.core.Model.ContratoEstagio;
+import br.com.core.Model.Disciplina;
+import br.com.core.Model.Matriz;
+import br.com.jansenfelipe.androidmask.MaskEditTextChangedListener;
 
 public class Welcome extends Activity {
 	private Spinner spinnerDisciplina, spinnerConteudo, spinnerCategoria,
 			spinnerAtividade;
 	private static final String TAG = "Welcome";
 	GerenciadorConexao novaConexao = new GerenciadorConexao();
-	
+	EditText data_inicio, data_fim;
 	Button btnLogout, salvar;
 	String nomeDisciplina, nomeCategoria, nomeConteudo, nomeAtividade;
 	JSONObject jsonobject;
@@ -52,31 +55,58 @@ public class Welcome extends Activity {
 	ArrayList<Atividade> atividades;
 	ArrayList<String> matrizlist;
 	ArrayList<Matriz> matrizes;
+	ContratoEstagio contratoEstagio = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        Context context = getApplicationContext();
-    	Bundle extras = getIntent().getExtras();
-		Estagiario estagiario = null;
-		if(extras != null && extras.containsKey("estagiario")) {
-		   estagiario = (Estagiario) extras.getSerializable("estagiario");
+		Bundle extras = getIntent().getExtras();
+
+		if (extras != null && extras.containsKey("contratoEstagio")) {
+			contratoEstagio = (ContratoEstagio) extras
+					.getSerializable("contratoEstagio");
 		}
-		CharSequence text = estagiario.getNome().toString()+ " você está logado!";
-		int duration = Toast.LENGTH_SHORT;
-		Toast toast = Toast.makeText(context, text, duration);
-		toast.show();
-	
+
 		setContentView(R.layout.activity_home);
+		data_inicio = (EditText) findViewById(R.id.editTextDataInicio);
+		data_fim = (EditText) findViewById(R.id.editTextDataFim);
+		MaskEditTextChangedListener maskDataInicio = new MaskEditTextChangedListener(
+				"##/##/####", data_inicio);
+		MaskEditTextChangedListener maskDataFim = new MaskEditTextChangedListener(
+				"##/##/####", data_fim);
+		data_inicio.addTextChangedListener(maskDataInicio);
+		data_fim.addTextChangedListener(maskDataFim);
+
 		new ListDisciplinas().execute();
 		salvar = (Button) findViewById(R.id.btnSalvar);
 		salvar.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
+				boolean data_inicio_valido = false;
+				boolean data_fim_valido = false;
+				
+				if(data_inicio.getText().toString() != null && !data_inicio.getText().toString().equals("")){
+					data_inicio_valido = Validator.validarDatas(data_inicio.getText().toString());
+					if (!data_inicio_valido) {
+						data_inicio.setError("Data inicio inválida!");
+						data_inicio.setFocusable(true);
+						data_inicio.requestFocus();
+					}
+				}
+				if(data_fim.getText().toString() != null && !data_fim.getText().toString().equals("")){
+					 data_fim_valido = Validator.validarDatas(data_fim.getText().toString());
+					if (!data_fim_valido) {
+						data_fim.setError("Data fim inválida!");
+						data_fim.setFocusable(true);
+						data_fim.requestFocus();
+					}
+				}
 				new AssociarAtividades().execute();
+		
 
-			}
+				}
+			
 		});
 
 	}
@@ -120,16 +150,10 @@ public class Welcome extends Activity {
 				String resposta = null;
 				spinnerDisciplina = (Spinner) findViewById(R.id.spinnerDisciplina);
 				spinnerConteudo = (Spinner) findViewById(R.id.spinnerConteudo);
-			
 				resposta = novaConexao.chamarConexaoDisciplinas("all", null);
-				
 				jsonarraydisciplina = new JSONArray(resposta);
 
-				// List<Disciplina> list = new ArrayList<Disciplina>();
-
 				try {
-					// Locate the NodeList name
-					// jsonarray = jsonobject.getJSONArray("displina");
 					for (int i = 0; i < jsonarraydisciplina.length(); i++) {
 						jsonobject = jsonarraydisciplina.getJSONObject(i);
 						Disciplina disciplina = new Disciplina();
@@ -179,13 +203,13 @@ public class Welcome extends Activity {
 						@Override
 						public void onItemSelected(AdapterView<?> parent,
 								View view, int position, long id) {
-						
-							Toast.makeText(
-									parent.getContext(),
-									"Disciplina selecionada : "
-											+ parent.getItemAtPosition(position)
-													.toString(),
-									Toast.LENGTH_SHORT).show();
+
+							/*
+							 * Toast.makeText( parent.getContext(),
+							 * "Disciplina selecionada : " +
+							 * parent.getItemAtPosition(position) .toString(),
+							 * Toast.LENGTH_SHORT).show();
+							 */
 							nomeDisciplina = parent.getItemAtPosition(position)
 									.toString();
 							Log.i(TAG, "Item: " + nomeDisciplina);
@@ -214,7 +238,8 @@ public class Welcome extends Activity {
 				conteudos = new ArrayList<Conteudo>();
 				jsonobjectdisciplina.put("nome", nomeDisciplina);
 
-				resposta2 = novaConexao.chamarConexaoConteudo("all", jsonobjectdisciplina.toString());
+				resposta2 = novaConexao.chamarConexaoConteudo("all",
+						jsonobjectdisciplina.toString());
 
 				jsonarrayconteudo = new JSONArray(resposta2);
 				try {
@@ -275,16 +300,16 @@ public class Welcome extends Activity {
 						@Override
 						public void onItemSelected(AdapterView<?> parent,
 								View view, int position, long id) {
-						
-							Toast.makeText(
-									parent.getContext(),
-									"Conteudo selecionado: "
-											+ parent.getItemAtPosition(position)
-													.toString(),
-									Toast.LENGTH_SHORT).show();
+
+							/*
+							 * Toast.makeText( parent.getContext(),
+							 * "Conteudo selecionado: " +
+							 * parent.getItemAtPosition(position) .toString(),
+							 * Toast.LENGTH_SHORT).show();
+							 */
 							nomeConteudo = parent.getItemAtPosition(position)
 									.toString();
-							Log.i(TAG, "Item: " + nomeConteudo);
+							/* Log.i(TAG, "Item: " + nomeConteudo); */
 						}
 
 						@Override
@@ -306,9 +331,9 @@ public class Welcome extends Activity {
 				categorialist = new ArrayList<String>();
 				String resposta = null;
 				spinnerCategoria = (Spinner) findViewById(R.id.spinnerCategoria);
-			
+
 				resposta = novaConexao.chamarConexaoCategorias("all", null);
-	
+
 				jsonarraycategoria = new JSONArray(resposta);
 
 				try {
@@ -354,15 +379,15 @@ public class Welcome extends Activity {
 						public void onItemSelected(AdapterView<?> parent,
 								View view, int position, long id) {
 							int idd = parent.getId();
-							Toast.makeText(
-									parent.getContext(),
-									"Categoria selecionada : "
-											+ parent.getItemAtPosition(position)
-													.toString(),
-									Toast.LENGTH_SHORT).show();
+							/*
+							 * Toast.makeText( parent.getContext(),
+							 * "Categoria selecionada : " +
+							 * parent.getItemAtPosition(position) .toString(),
+							 * Toast.LENGTH_SHORT).show();
+							 */
 							nomeCategoria = parent.getItemAtPosition(position)
 									.toString();
-							Log.i(TAG, "Item: " + nomeCategoria);
+							// Log.i(TAG, "Item: " + nomeCategoria);
 							new ListAtividade().execute();
 						}
 
@@ -388,8 +413,9 @@ public class Welcome extends Activity {
 				atividadelist = new ArrayList<String>();
 				atividades = new ArrayList<Atividade>();
 				jsonobjectatividade.put("nome", nomeCategoria);
-	
-				resposta2 = novaConexao.chamarConexaoAtividades("all", jsonobjectatividade.toString());
+
+				resposta2 = novaConexao.chamarConexaoAtividades("all",
+						jsonobjectatividade.toString());
 				jsonarrayatividade = new JSONArray(resposta2);
 				try {
 
@@ -444,15 +470,15 @@ public class Welcome extends Activity {
 						@Override
 						public void onItemSelected(AdapterView<?> parent,
 								View view, int position, long id) {
-							Toast.makeText(
-									parent.getContext(),
-									"Atividade selecionada: "
-											+ parent.getItemAtPosition(position)
-													.toString(),
-									Toast.LENGTH_SHORT).show();
+							/*
+							 * Toast.makeText( parent.getContext(),
+							 * "Atividade selecionada: " +
+							 * parent.getItemAtPosition(position) .toString(),
+							 * Toast.LENGTH_SHORT).show();
+							 */
 							nomeAtividade = parent.getItemAtPosition(position)
 									.toString();
-							Log.i(TAG, "Item: " + nomeAtividade);
+							// Log.i(TAG, "Item: " + nomeAtividade);
 
 						}
 
@@ -471,28 +497,32 @@ public class Welcome extends Activity {
 		@Override
 		protected Void doInBackground(Void... params) {
 			String respostaSalvar = null;
+
 			String valorCategoria = (String) spinnerCategoria.getSelectedItem();
 			String valorAtividade = (String) spinnerAtividade.getSelectedItem();
 			String valorConteudo = (String) spinnerConteudo.getSelectedItem();
 			String valorDisciplina = (String) spinnerDisciplina
 					.getSelectedItem();
+
 			JSONObject json = new JSONObject();
 			try {
-				
+
 				json.put("disciplina", valorDisciplina);
 				json.put("atividade", valorAtividade);
 				json.put("conteudo", valorConteudo);
 				json.put("categoria", valorCategoria);
-	
-				respostaSalvar = novaConexao.chamarConexaoAtividadesRealizadas("salvar", json.toString());
+				json.put("contrato", contratoEstagio.getId());
+				json.put("data_inicio", data_inicio);
+				json.put("data_fim", data_fim);
 
-				
+				respostaSalvar = novaConexao.chamarConexaoAtividadesRealizadas(
+						"salvar", json.toString());
+
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
-		
 			return null;
 		}
 

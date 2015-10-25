@@ -1,27 +1,21 @@
 package br.com.next;
 
-import java.util.ArrayList;
-import java.util.List;
 
-import org.apache.http.NameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import br.com.core.Model.ContratoEstagio;
-import br.com.core.Model.Estagiario;
-import br.com.core.Model.Matriz;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import br.com.core.Model.Estagiario;
+import br.com.core.Model.Matriz;
+import br.com.jansenfelipe.androidmask.MaskEditTextChangedListener;
 
 public class MainActivity extends Activity {
 	String resposta = null;
@@ -29,22 +23,43 @@ public class MainActivity extends Activity {
 	Button submit;
 	Estagiario estagiario = null;
 	Matriz matriz = null;
-	// Creating JSON Parser object
 	JSONParser jParser = new JSONParser();
 	GerenciadorConexao novaConexao = new GerenciadorConexao();
-
+	Helpers helpers = new Helpers();
 	JSONObject json;
-//	private static String url_login = "http://192.168.0.114:8080/habilis-server/estagiarios/login";
+	Context context;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		findViewsById();
+
+		/*
+		 * MaskEditTextChangedListener maskCPF = new
+		 * MaskEditTextChangedListener( "###.###.###-##", uname);
+		 * uname.addTextChangedListener(maskCPF);
+		 */
+
+		context = getApplicationContext();
+		if (!helpers.verificaConexao(context)) {
+			try {
+				Toast.makeText(context,
+						"Falha ao conectar com banco de dados.",
+						Toast.LENGTH_SHORT).show();
+
+				finish();
+			} catch (Throwable e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		submit.setOnClickListener(new View.OnClickListener() {
 
-			@Override
 			public void onClick(View arg0) {
+				Validator.validateNotNull(uname, "Campo usuario é obrigatório!");
+				Validator.validateNotNull(password, "Campo senha é obrigatório!");
+
 				new Login().execute();
 
 			}
@@ -70,7 +85,8 @@ public class MainActivity extends Activity {
 				json.put("senha", senha);
 				json.put("cpf", cpf);
 
-				resposta = novaConexao.chamarConexaoEstagiario("login", json.toString());
+				resposta = novaConexao.chamarConexaoEstagiario("login",
+						json.toString());
 				System.out.println(resposta);
 				if (resposta != null && !resposta.equals("")) {
 					JSONObject estagiarioObject = new JSONObject(resposta);
@@ -102,11 +118,15 @@ public class MainActivity extends Activity {
 			super.onPostExecute(result);
 			if (resposta != null && !resposta.equals("")) {
 				Intent login = new Intent(getApplicationContext(),
-						Welcome.class);
+						ListaContrato.class);
 				login.putExtra("estagiario", estagiario);
 				login.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(login);
 				finish();
+			} else {
+				Toast.makeText(context, "Dados de login estão incorretos!",
+						Toast.LENGTH_SHORT).show();
+
 			}
 		}
 

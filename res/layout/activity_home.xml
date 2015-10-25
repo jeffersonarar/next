@@ -1,43 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:orientation="vertical" >
 
-     <Spinner
-         android:id="@+id/spinnerDisciplina"
-         android:layout_width="match_parent"
-         android:layout_height="wrap_content"
-         android:prompt="@string/disciplina_prompt" />
-
-    <Spinner
-        android:id="@+id/spinnerConteudo"
+    <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dip" />
+        android:layout_height="fill_parent"
+        android:isScrollContainer="true"
+        android:orientation="vertical" >
 
-    <Spinner
-        android:id="@+id/spinnerCategoria"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dip" />
-    
-    <Spinner
-        android:id="@+id/spinnerAtividade"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dip" />
-    
-    <Button
-        android:id="@+id/btnSalvar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Salvar" />
-    
-    <Button
-        android:id="@+id/btnCancelar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Cancelar" />
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dip"
+            android:layout_marginTop="15dip"
+            android:text="DISCIPLINA" />
 
-</LinearLayout>
+        <Spinner
+            android:id="@+id/spinnerDisciplina"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dip"
+            android:prompt="@string/disciplina_prompt" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dip"
+            android:layout_marginTop="15dip"
+            android:text="CONTEÚDO" />
+
+        <Spinner
+            android:id="@+id/spinnerConteudo"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dip" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dip"
+            android:layout_marginTop="15dip"
+            android:text="CATEGORIA" />
+
+        <Spinner
+            android:id="@+id/spinnerCategoria"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dip" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dip"
+            android:layout_marginTop="15dip"
+            android:text="ATIVIDADE" />
+
+        <Spinner
+            android:id="@+id/spinnerAtividade"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dip" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:layout_width="102dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dip"
+                android:layout_marginTop="15dip"
+                android:text="DATA INICIO" />
+
+            <EditText
+                android:id="@+id/editTextDataInicio"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dip"
+                android:layout_marginTop="15dip"
+                android:layout_weight="0.21"
+                android:ems="10"
+                android:inputType="date" >
+            </EditText>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:layout_width="104dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dip"
+                android:layout_marginTop="15dip"
+                android:text="DATA FIM" />
+
+            <EditText
+                android:id="@+id/editTextDataFim"
+                android:layout_width="115dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dip"
+                android:layout_marginTop="15dip"
+                android:layout_weight="0.67"
+                android:ems="10"
+                android:inputType="date" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnSalvar"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="SALVAR" />
+    </LinearLayout>
+
+</ScrollView>

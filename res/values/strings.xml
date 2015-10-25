@@ -9,4 +9,5 @@
     <string name="action_sair">Sair</string>
     <string name="disciplina_prompt">Disciplina</string>
     <string name="categoria_title">Category:</string>
+    <color name="colorButtonLogin">#4682B4</color>
 </resources>
