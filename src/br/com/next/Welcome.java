@@ -11,6 +11,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.MaskFilter;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.style.MaskFilterSpan;
@@ -56,17 +57,20 @@ public class Welcome extends Activity {
 	ArrayList<String> matrizlist;
 	ArrayList<Matriz> matrizes;
 	ContratoEstagio contratoEstagio = null;
+	Context context;
+	
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Bundle extras = getIntent().getExtras();
-
+		context = getApplicationContext();
+		
 		if (extras != null && extras.containsKey("contratoEstagio")) {
 			contratoEstagio = (ContratoEstagio) extras
 					.getSerializable("contratoEstagio");
 		}
-
+		
 		setContentView(R.layout.activity_home);
 		data_inicio = (EditText) findViewById(R.id.editTextDataInicio);
 		data_fim = (EditText) findViewById(R.id.editTextDataFim);
@@ -124,9 +128,9 @@ public class Welcome extends Activity {
 			return true;
 		}
 		if (id == R.id.action_atividades) {
-			return true;
-		}
-		if (id == R.id.action_dados) {
+			Uri uri = Uri.parse("http://192.168.0.104:8080/habilis-server/atividades.zul?id="+contratoEstagio.getId());
+			 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+			 startActivity(intent);
 			return true;
 		}
 		if (id == R.id.action_sair) {
@@ -493,10 +497,10 @@ public class Welcome extends Activity {
 	}
 
 	private class AssociarAtividades extends AsyncTask<Void, Void, Void> {
-
+		String respostaSalvar = null;
 		@Override
 		protected Void doInBackground(Void... params) {
-			String respostaSalvar = null;
+			
 
 			String valorCategoria = (String) spinnerCategoria.getSelectedItem();
 			String valorAtividade = (String) spinnerAtividade.getSelectedItem();
@@ -512,12 +516,12 @@ public class Welcome extends Activity {
 				json.put("conteudo", valorConteudo);
 				json.put("categoria", valorCategoria);
 				json.put("contrato", contratoEstagio.getId());
-				json.put("data_inicio", data_inicio);
-				json.put("data_fim", data_fim);
-
+				json.put("data_inicio", data_inicio.getText().toString());
+				json.put("data_fim", data_fim.getText().toString());
+				
 				respostaSalvar = novaConexao.chamarConexaoAtividadesRealizadas(
 						"salvar", json.toString());
-
+				
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -528,6 +532,15 @@ public class Welcome extends Activity {
 
 		protected void onPostExecute(Void result) {
 			super.onPostExecute(result);
+			
+			if(respostaSalvar != null){
+				Toast.makeText(Welcome.this, respostaSalvar,
+						Toast.LENGTH_SHORT).show();
+			}else{
+				Toast.makeText(Welcome.this, "Erro ao salvar!",
+						Toast.LENGTH_SHORT).show();
+			}
+
 		}
 
 	}

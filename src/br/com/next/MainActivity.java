@@ -7,6 +7,7 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -20,7 +21,7 @@ import br.com.jansenfelipe.androidmask.MaskEditTextChangedListener;
 public class MainActivity extends Activity {
 	String resposta = null;
 	EditText uname, password;
-	Button submit;
+	Button submit, button2;
 	Estagiario estagiario = null;
 	Matriz matriz = null;
 	JSONParser jParser = new JSONParser();
@@ -40,6 +41,10 @@ public class MainActivity extends Activity {
 		 * MaskEditTextChangedListener( "###.###.###-##", uname);
 		 * uname.addTextChangedListener(maskCPF);
 		 */
+		
+		MaskEditTextChangedListener maskcpf = new MaskEditTextChangedListener(
+				"###.###.###-##", uname);
+		uname.addTextChangedListener(maskcpf);
 
 		context = getApplicationContext();
 		if (!helpers.verificaConexao(context)) {
@@ -64,6 +69,15 @@ public class MainActivity extends Activity {
 
 			}
 		});
+		button2 = (Button) findViewById(R.id.button2);
+		button2.setOnClickListener(new View.OnClickListener() {
+
+			public void onClick(View arg0) {
+			 Uri uri = Uri.parse("http://192.168.0.104:8080/habilis-mvvm/solicitarNovaSenha.zul");
+			 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+			 startActivity(intent);
+			}
+		});
 	}
 
 	private void findViewsById() {
@@ -71,6 +85,7 @@ public class MainActivity extends Activity {
 		uname = (EditText) findViewById(R.id.txtUser);
 		password = (EditText) findViewById(R.id.txtPass);
 		submit = (Button) findViewById(R.id.button1);
+		
 	}
 
 	private class Login extends AsyncTask<Void, Void, Void> {

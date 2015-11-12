@@ -2,7 +2,7 @@ package br.com.next;
 
 public class GerenciadorConexao {
 
-	public static final String ENDERECO_SERVER = "http://192.169.2.225:8080/habilis-server";
+	public static final String ENDERECO_SERVER = "http://192.168.0.102:8080/habilis-server";
 	public static final String METODO_POST = "POST"; 
 	public static final String METODO_GET = "GET"; 
 	
@@ -100,6 +100,10 @@ public class GerenciadorConexao {
 		
 		if (method == "salvar") {
 			metodoReq = METODO_POST;
+		}
+		if(method == "relatorio"){
+			metodoReq = METODO_POST;
+			
 		}
 		resposta = JSONParser.makePOST(ENDERECO_SERVER + classeServico
 				+ method, metodoReq, param);
